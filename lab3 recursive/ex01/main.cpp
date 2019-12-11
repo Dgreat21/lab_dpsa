@@ -1,104 +1,57 @@
-//
-// Created by Dyan Great on 04/12/2019.
-//
+#include "list.h"
 #include <iostream>
-#include <string.h>
 
-typedef	struct	numbers{
-	double			num;
-	struct	numbers	*next;
-};
-
-#define MALLOC_NEW_LIST 0
-
-void		error_rise(int error_code)
+int		recursive_numbers(List<int> *lst)
 {
-	std::cout << "Something went wrong" << std::endl;
-	switch (error_code)
+	int			summ_n = 0;
+	List<int>	*it_lst;
+
+	if (!lst)
+		return (1);
+	it_lst = lst;
+	while (it_lst)
 	{
-		case : MALLOC_NEW_LIST
-			std::cout << "MALLOC_NEW_LIST error" << std::endl;
-			break;
-		default:
-			std::cout << "unexpected error" << endl;
+		summ_n += it_lst->data;
+		it_lst = it_lst->next;
 	}
-	exit();
+	return (recursive_numbers(lst->next) * summ_n);
 }
 
-double		prv_factorial(numbers *node)
+int		main(void)
 {
-	double num;
+	char		input[256];
+	char		*tok = NULL;
+	char		*brkb = NULL;
+	int			num = 0;
+	List<int>	*list = NULL;
 
-	if (node->next == NULL)
-		return (num);
-	num = prv_factorial(node->num * node->next->num);
-	return (num);
-}
-
-numbers		*lst_add(numbers *node, int content, bool end = true)
-{
-	numbers *new;
-
-	if (!(new = (numbers *)malloc(sizeof(numbers))))
+	while (std::cin.good())
 	{
-		error_rise(MALLOC_NEW_LIST);
-		return (NULL);
+		list = NULL;
+		std::cout << "Type an integer numbers, when it ends, type 'eof'.\n";
+		std::cout << "$> ";
+		bzero(input, sizeof(input));
+		std::cin.getline(input, sizeof(input));
+		for (
+			tok = strtok_r(input, " \t\n", &brkb);
+			tok;
+			tok = strtok_r(NULL, " \t\n", &brkb)
+		)
+		{
+			if (!strncmp(tok, "exit", 4))
+				break ;
+			num = atoi(tok);
+			list_push(num, &list);
+		}
+		if (list)
+		{
+			num = recursive_numbers(list);
+			std::cout << "YOUR RESULT: " << num << "\n";
+			list_destroy(&list, nulldel);
+		}
+		list = NULL;
+		if (tok && !strncmp(tok, "exit", 4))
+			break ;
 	}
-	new->next = NULL;
-	if (end){
-		node->next = new;
-	}
-	else
-		new->next = node;
-	return (new);
-}
-
-double input(int i)
-{
-	double number;
-	string input;
-
-	std::cout << "enter " << i << "-st number" << endl;
-	std::cin >> input;
-
-	number = atol(input);
-	return (number);
-}
-
-
-numbers	*menu(){
-
-	std::cout<< "Hello!" << std::endl << " program usage is very simple : if you input string instead number it will be 0\n";
-	std:cout << "How much numbers in list?" << std::endl;
-	size_t size;
-	std::cin >> size;
-
-	numbers *begin, *list;
-
-	begin = list;
-
-	for(int i = 1; i < size; i++)
-	{
-		lst_add(list, input(i), false);
-		list = list->next;
-	}
-
-	double number;
-	string input;
-
-	std::cout << "enter last number" << endl;
-	std::cin >> input;
-
-	number = atol(input);
-	lst_add(list, input(i), false);
-	list = begin;
-}
-
-void	input()
-{
-
-}
-
-int		main(int argc, std::string){
-
+	return (EXIT_SUCCESS);
 }

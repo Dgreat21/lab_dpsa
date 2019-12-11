@@ -32,6 +32,7 @@ void		list_destroy(List<int> **list, void (*del)(int data))
 		if (del)
 			del(data);
 	}
+	(*list) = NULL;
 }
 
 template	<>
