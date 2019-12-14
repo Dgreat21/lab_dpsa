@@ -28,7 +28,7 @@ int		main(void)
 	while (std::cin.good())
 	{
 		list = NULL;
-		std::cout << "Type an integer numbers, when it ends, type 'eof'.\n";
+		std::cout << "Type an integer numbers (type help for user manual):\n";
 		std::cout << "$> ";
 		bzero(input, sizeof(input));
 		std::cin.getline(input, sizeof(input));
@@ -38,6 +38,8 @@ int		main(void)
 			tok = strtok_r(NULL, " \t\n", &brkb)
 		)
 		{
+			if (!strncmp(tok, "help", 4))
+				break ;
 			if (!strncmp(tok, "exit", 4))
 				break ;
 			num = atoi(tok);
@@ -52,6 +54,13 @@ int		main(void)
 		list = NULL;
 		if (tok && !strncmp(tok, "exit", 4))
 			break ;
+		if (tok && !strncmp(tok, "help", 4))
+		{
+			std::cout << "\nUSAGE:\n"
+			"Type integers separated by spaces,\n"
+			"if you type a word, it equals to 0.\n"
+			"If you want to exit, just type exit.\n\n";
+		}
 	}
 	return (EXIT_SUCCESS);
 }
