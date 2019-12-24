@@ -8,7 +8,7 @@ int		main(void)
 	result = ast->execute();
 	// ast->console_log();
 
-	ast->prepare("(1+2+3)*(4+5+6)");
+	ast->prepare("1 * 2 * 4 + 5 * 5 * 6 + 6");
 	result = ast->execute();
 	ast->console_log();
 

@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <stack>
+#include <string.h>
 #include <iostream>
 
 // Nodes of binary tree functions
@@ -312,25 +313,47 @@ Node<AST_data>*	ASTree::parse_expr(const char *expr)
 	return (nd);
 }
 
-void			put_ast_node(AST_data nd)
+size_t			put_ast_node(AST_data nd, bool isend)
 {
+	size_t		printed;
+
 	if (nd.type == operation || nd.type == brkts_op)
+	{
 		cout << nd.oper;
+		printed = 1;
+	}
 	else if (nd.type == number)
+	{
 		cout << nd.value;
+			printed = 1;
+		for (;nd.value > 9;nd.value /= 10)
+			printed += 1;
+	}
+	if (!isend)
+	{
+		cout << " => ";
+		printed += 4;
+	}
+	return (printed);
 }
 
-void			put_the_tree(Node<AST_data> *nd, size_t u)
+void			put_the_tree(Node<AST_data> *nd, size_t u, size_t pr)
 {
+	size_t		addit;
+
 	if (nd == nullptr)
 		return ;
-	cout << " ";
-	put_ast_node(nd->data);
-	put_the_tree(nd->left, u);
-	put_the_tree(nd->right, u);
+
+	for (size_t	i = 0; i < u; ++i)
+		cout << " ";
+	addit = put_ast_node(nd->data, !nd->right);
+	if (!nd->right) cout << "\n";
+	if (!nd->right) pr = 0;
+	put_the_tree(nd->right, !nd->right ? pr : 0, pr + addit);
+	put_the_tree(nd->left, pr, pr);
 }
 
 void			ASTree::console_log(void)
 {
-	put_the_tree(this->root, 0);
+	put_the_tree(this->root, 0, 0);
 }

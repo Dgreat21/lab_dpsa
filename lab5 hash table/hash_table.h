@@ -6,6 +6,8 @@
 #define HS_FNV1A_64_PRIME 0x00000100000001b3
 
 #include <memory>
+#include <string.h>
+#include <iostream>
 
 typedef unsigned long long	u64;
 
@@ -46,12 +48,52 @@ class				HashTable
 		void		del(const char *key); // del cell by key
 		void		set(const char *key, DATA data); // set or add cell with DATA and key
 		u64			getcount(void); // get amount of elements
+		void		print(void);
 };
 
 template <typename DATA>
 inline bool	HashTable<DATA>::_grow_trigger(void)
 {
-	return (this->_count + 2 > this->_size);
+	return ((this->_count * 4) / 3 > this->_size);
+}
+
+u64			fake(const char *key, u64 fake)
+{
+	// fnv1a
+	u64 	hash = HS_FNV1A_64_OFFSET;
+
+	while (*key)
+	{
+		hash ^= u64(*key);
+		hash *= HS_FNV1A_64_PRIME;
+		key += 1;
+	}
+	return (hash % fake);
+}
+
+// Prints out information about hash table
+// Size and amount of elemnets, and information about each item.
+// Prints a real index, "first try" index, key and value.
+template <typename DATA>
+void		HashTable<DATA>::print(void)
+{
+	size_t	i = 0;
+
+	if (this->_count == 0)
+		return ;
+	std::cout << "\nHASH TABLE INFO:";
+	std::cout << "\nsize: " << this->_size << "\ncount: " << this->_count;
+	std::cout << "\n\nELEMENTS:";
+	for (;i<this->_size; ++i)
+	{
+		if (this->_is_free_index(i))
+			continue ;
+		std::cout << "\n===================";
+		std::cout << "\nhi/fi: " << i << "/" << fake((this->_heap[i]).key, this->_size);
+		std::cout << "\nkey: " << (this->_heap[i]).key;
+		std::cout << "\nval: " << (this->_heap[i]).data;
+	}
+	std::cout << "\n===================\n";
 }
 
 template <typename DATA>
