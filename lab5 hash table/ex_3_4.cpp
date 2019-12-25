@@ -3,10 +3,6 @@
 
 using namespace std;
 
-#define UT_HS_SZ 16
-
-#define UT_TEST(str) (cout << str << ": " << fake(str, UT_HS_SZ) << "\n")
-
 int			main(void)
 {
 	const char	*strs[] = {

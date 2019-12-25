@@ -1,6 +1,6 @@
 #pragma once
 
-#include <memory>
+#include <memory.h>
 #include <stack>
 #include <string.h>
 #include <iostream>
@@ -121,10 +121,13 @@ class		ASTree: public BinaryTree<AST_data>
 		};
 		Node<AST_data>*		parse_expr(const char *expr);
 		long				resolver(Node<AST_data> *ls);
+		Node<AST_data>*		copy_tree(Node<AST_data> *ls);
+		char				expr_or[1024];
 		
 	public:
 		ASTree(void (*del_callback)(AST_data *data)=&no_free<AST_data>)
 		{
+			bzero(this->expr_or, sizeof(this->expr_or));
 			this->del_callback = del_callback;
 			this->root = nullptr;
 		};
@@ -132,10 +135,24 @@ class		ASTree: public BinaryTree<AST_data>
 		{
 			this->del_callback = del_callback;
 			this->root = parse_expr(expr);
+			strncpy(this->expr_or, expr, sizeof(this->expr_or));
+		};
+		ASTree(ASTree* AST)
+		{
+			strncpy(this->expr_or, AST->expr_or, sizeof(this->expr_or));
+			this->root = copy_tree(AST->root);
+			this->del_callback = AST->del_callback;
 		};
 		long				execute(void);
 		void				prepare(const char *extr);
 		void				console_log(void);
+		void				put_formula(void)
+		{
+			if (this->expr_or[0])
+				std::cout << "FORMULA: " << this->expr_or << "\n";
+			else
+				std::cout << "No formula yet\n";
+		}
 
 };
 
@@ -144,6 +161,7 @@ void		ASTree::prepare(const char *extr)
 	if (this->root)
 		delete_tree(this->root, this->del_callback);
 	this->root = parse_expr(extr);
+	strncpy(this->expr_or, extr, sizeof(this->expr_or));
 }
 
 long		ASTree::execute(void)
@@ -151,6 +169,18 @@ long		ASTree::execute(void)
 	if (this->root == nullptr)
 		throw ("NO PREPARED EXPRESSION");
 	return (resolver(this->root));
+}
+
+Node<AST_data>*		ASTree::copy_tree(Node<AST_data> *ls)
+{
+	Node<AST_data>*	node;
+
+	if (ls == nullptr)
+		return (nullptr);
+	node = new_node(ls->data);
+	node->left = copy_tree(ls->left);
+	node->right = copy_tree(ls->right);
+	return (node);
 }
 
 long		ASTree::resolver(Node<AST_data> *nd)
