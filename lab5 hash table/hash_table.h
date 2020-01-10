@@ -6,6 +6,7 @@
 #define HS_FNV1A_64_PRIME 0x00000100000001b3
 
 #include <memory>
+#include <cstring>
 #include <string.h>
 #include <iostream>
 

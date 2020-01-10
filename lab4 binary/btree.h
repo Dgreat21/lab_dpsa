@@ -4,6 +4,7 @@
 #include <stack>
 #include <string.h>
 #include <iostream>
+#include <cstring>
 
 // Nodes of binary tree functions
 namespace BT_Nodes

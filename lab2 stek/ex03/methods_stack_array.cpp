@@ -1,5 +1,6 @@
 #include "stack_arr.h"
 #include <iostream>
+#include "linux_header.h"
 
 template	<>
 int			StackAR<int>::top(void)

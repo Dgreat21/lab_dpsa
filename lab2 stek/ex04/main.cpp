@@ -1,5 +1,6 @@
 #include <stack>
 #include <iostream>
+#include <cstring>
 
 #define  USER_TEXT_BUFFER_SZ 1024
 
@@ -30,7 +31,8 @@ void put_duples_stack(std::stack <duple> s, char const *name)
 	{
 		put_duple(s.top());
 		s.pop();
-		!s.empty() ? std::cout << " " : 0;
+		if (!s.empty())
+				std::cout << " ";
 	}
 	std::cout << std::endl;
 }
