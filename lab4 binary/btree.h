@@ -250,7 +250,7 @@ size_t		ASTree::add_op(stack<Node<AST_data> *>* stk, size_t i, const char *expr,
 			throw (expr[i]);
 		stk->push(*nd);
 		numi = (*nd)->right;
-		if (numi->data.type != number)
+		if (numi->data.type != number && numi->data.type !=  brkts_op)
 			throw (expr[i]);
 		node->left = numi;
 		(*nd)->right = node;
