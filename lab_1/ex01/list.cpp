@@ -126,7 +126,7 @@ void			list_push_front(list_t **list, list_t *new_node, int (*callback)(list_t *
 			*list = new_node;
 			return ;
 		}
-		for (it = *list; it->next && callback(it->next); it = it->next) ;
+		for (it = *list; it->next && !callback(it->next); it = it->next) ;
 		list_push_front(&it, new_node);
 	}
 }

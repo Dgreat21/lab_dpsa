@@ -42,6 +42,7 @@ class		Date {
 };
 
 Date		set_yyyy_mm_dd(u32_t date);
+u32_t		get_yyyy_mm_dd(Date date);
 
 typedef struct list_s	list_t;
 
