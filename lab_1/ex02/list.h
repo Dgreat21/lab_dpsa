@@ -103,7 +103,7 @@ public:
 		this->root = new List_Node;
 		for (List_Node *it = this->root; size != 0; --size) {
 			new_it = new List_Node;
-			it->next(new_it);
+			it = it->next(new_it);
 		}
 	}
 
@@ -146,6 +146,13 @@ public:
 	void			push_front(List_Node *node);
 	void			push_front(List_Node *node, bool (*cb)(const List_Node &));
 	void			print(const char *str = 0x0);
+	u64_t			size(void) {
+		u64_t		sz = 0;
+		for (List_Node *it = this->root; it != 0x0; it = it->next()) {
+			sz += 1;
+		}
+		return (sz);
+	}
 };
 
 #endif
