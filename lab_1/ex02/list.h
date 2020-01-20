@@ -107,7 +107,7 @@ public:
 		}
 	}
 
-	List(List& list) {
+	List(const List& list) {
 		this->root = list.root;
 	}
 

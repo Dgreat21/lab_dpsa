@@ -1,53 +1,136 @@
 #include "list.h"
 #include <stdio.h>
+#include <map>
+#include <string>
+#include <vector>
+#include <iostream>
+#include <sstream>
 
-int main(void) {
-	List	list_1(2);
-	List	list_2;
-	List	list_3;
+using namespace std;
 
-	list_1[(u32_t)0]->polis_id = 1;
-	//set pid
-	list_1[1]->polis_id = 2;
-	//set pid
+map<string, List>		g_list_map = {};
+char					line[1024];
+u32_t					find_polis;
+u32_t					find_date;
+u32_t					find_dg;
 
-	list_1.push_back(new List_Node(3,0, 20200101));
-	list_1.push_back(new List_Node(4,0, 19700101));
-	list_1.push_back(new List_Node(5,0, 20190219));
-	list_1.push_back(new List_Node(11,0, 20210509));
-	list_1.push_back(new List_Node(12,0, 20200101));
-	list_1.push_back(new List_Node(13,0, 10000101));
-	list_1.push_back(new List_Node(21,0, 19421225));
-	list_1.push_back(new List_Node(22,0, 19421225));
-	list_1.push_back(new List_Node(23,0, 19421225));
-	list_1.push_back(new List_Node(31,0, 19421225));
-	list_1.push_back(new List_Node(32,0, 19421225));
+vector<string> split(string strToSplit, char delimeter) {
+    stringstream ss(strToSplit);
+    string item;
+    vector<string> splittedStrings;
+    while (getline(ss, item, delimeter)) {
+       splittedStrings.push_back(item);
+    }
+    return splittedStrings;
+}
 
-	list_2 = list_1.sublist([](const List_Node &node){
-		if (node.polis_id < 10 || node.polis_id > 30)
-			return (true);
-		return (false);
-	});
+void		put_greeting_mess(void) {
+	printf(
+		"Приветствуем вас в программе тестирования списков!\n"
+		"Автор: Мазохин Д.И.\n"
+	);
+}
 
-	list_3 = list_1.sublist_cut([](const List_Node &node){
-		if (node.polis_id > 10 && node.polis_id < 20)
-			return (true);
-		return (false);
-	});
+void		put_prompt(void) {
+	cout << "Для инструкции наберите `help`\n" << "$> ";
+}
 
-	list_3.push_front(new List_Node(101, 0, 20121212),
-		[](const List_Node &n) {
-			if (n.polis_id == 12)
+bool		is_list_exists(const string &name) {
+	return	g_list_map.count(name) != 0;
+}
+
+void		put_help_message(void) {
+	printf(
+		"\n		Инструкция:\n\n\n"
+		"`create <name> [count]` - Создать список с именем name и с количеством\n"
+		"	элементов count.\n\n"
+		"`print <name>` - вывести список на экран.\n\n"
+		"`get <name> <polis_id>` - получение элементов списка по ключу.\n\n"
+		"`push <name> <polis> <diagnosis> <date> [before_polis]` - вставка\n"
+		"	элемента, если указан before_polis, то элемент вставляется перед\n"
+		"	элемнтом с указаным полисом.\n\n"
+		"`sublist <name> <sub_name> [-pid polis | -dig diagnosis | -dat date]` - \n\n"
+		"`sublist <name> <sub_name> [-pd polis | -dg diagnosis | -dt date]` -\n"
+		"	создает новый список из списка name, по значениям.\n\n"
+		"`get_dt_dg <name> <diagnosis> <date>` - определяет количество элементов в списке\n"
+		"	с задаными диагнозом и датой.\n\n"
+		"`list` - выводит список доступных вам списков.\n\n"
+		"`exit` - выход из программы.\n\n"
+	);
+}
+
+void		put_err(const char *message) {
+	cerr << "Ошибка: " << message << endl;
+}
+
+void		create_list(const string &name, u32_t size) {
+	List			new_list;
+	string			line_str;
+	vector<string>	args;
+	
+	if (is_list_exists(name)) {
+		put_err("Список с таким именем уже существует!\n");
+	} else {
+		new_list = List(size);
+		for (u32_t i = 0; i < size; ++i) {
+			cout << "Введите данные элемента №" << i << ": ";
+			cin.getline(line, sizeof(line));
+			line_str = line;
+			args = split(line_str, ' ');
+			if (args.size() != 3) {
+				size -= 1;
+				put_err("Введите правильный формат данных: <polis> <diagnosis> <date>!");
+				continue ;
+			} else {
+				new_list[i]->polis_id = (u32_t)atol(args[0].c_str());
+				new_list[i]->date = (u32_t)atol(args[1].c_str());
+				new_list[i]->diagnosis = (u32_t)atol(args[2].c_str());
+			}
+			args.clear();
+		}
+		g_list_map.insert({name, new_list});
+	}
+}
+
+void		get_values(const string &name, u32_t polis_id) {
+	if (is_list_exists(name) == false) {
+		put_err("Список с таким именем отсуствует!\n");
+	} else {
+		List	request;
+
+		find_polis = polis_id;
+		request = g_list_map[name].sublist([](const List_Node &n) -> bool {
+			if (n.polis_id == ::find_polis)
 				return (true);
 			return (false);
 		});
-	list_3.push_back(new List_Node(14, 0, 20121212));
-	list_3.push_back(new List_Node(15, 0, 20121212));
+		request.print("Запрос");
+		request.empty();
+	}
+}
 
-	list_1.print("l1_new");
-	list_2.print("l2_cut");
-	list_3.print("l3_sub");
-	list_1.empty();
-	list_2.empty();
-	list_3.empty();
+void		put_list(const string &name) {
+	if (is_list_exists(name) == false) {
+		put_err("Список с таким именем отсуствует!\n");
+	} else {
+		g_list_map[name].print(name.c_str());
+	}
+}
+
+void		list_list(void) {
+	map<string, List>::iterator		it = g_list_map.begin();
+
+	if (g_list_map.size() == 0) {
+		printf("У вас нет доступных списков!\n");
+		return ;
+	}
+	while (it != g_list_map.end()) {
+		string	name = it->first;
+		printf("> %s\n", name.c_str());
+		it++;
+	}
+}
+
+int 		main(void) {
+
 }
